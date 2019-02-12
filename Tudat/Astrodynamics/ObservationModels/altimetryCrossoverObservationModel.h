@@ -58,9 +58,12 @@ public:
     {
         std::vector< double > linkEndTimes;
         std::vector< Eigen::Matrix< double, 6, 1 > > linkEndStates;
+//        Eigen::VectorXd linkEndTimes;
+//        std::vector< double > XoverData; // take this out later
 
         return computeIdealObservationsWithLinkEndData(
                     time, linkEndAssociatedWithTime, linkEndTimes, linkEndStates );
+//                    time, linkEndAssociatedWithTime, linkEndTimes, linkEndStates, XoverData ); // take this out later
     }
 
     //! Function to compute one-way range observable without any corrections.
@@ -82,11 +85,56 @@ public:
                     const TimeType time,
                     const LinkEndType linkEndAssociatedWithTime,
                     std::vector< double >& linkEndTimes,
+//                    Eigen::VectorXd& LinkEndTimes,
                     std::vector< Eigen::Matrix< double, 6, 1 > >& linkEndStates )
+//                    std::vector< Eigen::Matrix< double, 6, 1 > >& linkEndStates, // take this out later
+//                    std::vector< double >& XoverData ) // take this out later
     {
-        Eigen::Matrix< ObservationScalarType, 1, 1 > crossoverAltimetryObservation;
+        // y do i need to clear them?
+        linkEndTimes.clear( );
+        linkEndStates.clear( );
 
-        return crossoverAltimetryObservation;
+        TimeType firstArcTime = time, secondArcTime = crossoverTimes_[ time ];
+        StateType firstArcState = firstArcBodyStateFunction_( firstArcTime );
+        StateType secondArcState = secondArcBodyStateFunction_( secondArcTime );
+
+        ObservationScalarType crossoverAltimetryObservation;
+
+        // Add if checks for the existency of t1 & t2
+
+        crossoverAltimetryObservation = firstArcState.segment( 0, 3 ).norm( )-secondArcState.segment( 0, 3 ).norm( );
+
+        // Set link end states and times.
+//        linkEndTimes.push_back( static_cast< double >( firstArcTime ) );
+//        linkEndTimes.push_back( static_cast< double >( secondArcTime ) );
+
+//        linkEndStates.push_back( firstArcState.template cast< double >( ) );
+//        linkEndStates.push_back( secondArcState.template cast< double >( ) );
+
+//        XoverData[ firstArcTime ].push_back( secondArcTime ); // take this out later
+//        XoverData.push_back( secondArcTime ); // take this out later
+
+//        XoverData.push_back( static_cast< double >( firstArcTime ) );
+//        XoverData.push_back( static_cast< double >( firstArcState.segment( 0, 3 ).norm( ) ) );
+//        XoverData.push_back( static_cast< double >( secondArcState.segment( 0, 3 ).norm( ) ) );
+
+        // When using std::vector< double >& linkEndTimes (compiles)
+//        linkEndTimes.push_back( static_cast< double >( secondArcTime ) );
+//        linkEndTimes.push_back( static_cast< double >( firstArcState.segment( 0, 3 ).norm( ) ) );
+//        linkEndTimes.push_back( static_cast< double >( secondArcState.segment( 0, 3 ).norm( ) ) );
+
+        // When using Eigen::VectorXd& LinkEndTimes (doesn't compile)
+//        LinkEndTimes[0] = secondArcTime;
+//        LinkEndTimes[1] = firstArcState.segment( 0, 3 ).norm( );
+//        LinkEndTimes[2] = secondArcState.segment( 0, 3 ).norm( );
+
+        // what is the .finished() for?
+        return ( Eigen::Matrix< ObservationScalarType, 1, 1 >( ) << crossoverAltimetryObservation ).finished( );
+    }
+    double tester(
+            double number )
+    {
+        return number + 1;
     }
 
 private:

@@ -16,6 +16,7 @@
 #include "Tudat/Astrodynamics/ObservationModels/oneWayRangeObservationModel.h"
 #include "Tudat/Astrodynamics/ObservationModels/oneWayDopplerObservationModel.h"
 #include "Tudat/Astrodynamics/ObservationModels/angularPositionObservationModel.h"
+#include "Tudat/Astrodynamics/ObservationModels/altimetryCrossoverObservationModel.h"
 
 #include "Tudat/SimulationSetup/EstimationSetup/createAngularPositionPartials.h"
 #include "Tudat/SimulationSetup/EstimationSetup/createOneWayRangePartials.h"
@@ -23,6 +24,8 @@
 #include "Tudat/SimulationSetup/EstimationSetup/createDifferencedOneWayRangeRatePartials.h"
 #include "Tudat/SimulationSetup/EstimationSetup/createNWayRangePartials.h"
 #include "Tudat/SimulationSetup/EstimationSetup/createEulerAngleObservationPartials.h"
+#include "Tudat/SimulationSetup/EstimationSetup/createAltimeterCrossoverPartials.h"
+
 namespace tudat
 {
 
@@ -152,6 +155,17 @@ PerLinkEndPerLightTimeSolutionCorrections getLightTimeCorrectionsList(
             }
             case observation_models::euler_angle_313_observable:
             {
+                break;
+            }
+            case observation_models::altimetry_crossover:
+            {
+//                std::shared_ptr< observation_models::AltimetryCrossoverObservationModel
+//                        < ObservationScalarType, TimeType> > altimetryCrossoverModel =
+//                        std::dynamic_pointer_cast< observation_models::AltimetryCrossoverObservationModel
+//                        < ObservationScalarType, TimeType> >
+//                        ( observationModelIterator->second );
+//                singleObservableCorrectionList = (
+//                            altimetryCrossoverModel->getLightTimeCalculator( )->getLightTimeCorrection( ) );
                 break;
             }
             default:
@@ -305,6 +319,11 @@ public:
             break;
         case observation_models::n_way_range:
             observationPartialList = createNWayRangePartials< ObservationScalarType >(
+                        utilities::createVectorFromMapKeys( observationModelList ), bodyMap, parametersToEstimate,
+                        getLightTimeCorrectionsList( observationModelList ) );
+            break;
+        case observation_models::altimetry_crossover:
+            observationPartialList = createAltimeterCrossoverPartials< ObservationScalarType >(
                         utilities::createVectorFromMapKeys( observationModelList ), bodyMap, parametersToEstimate,
                         getLightTimeCorrectionsList( observationModelList ) );
             break;
