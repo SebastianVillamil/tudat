@@ -479,7 +479,7 @@ class AltimetryCrossoverObservationSettings: public ObservationSettings
 public:
 
     AltimetryCrossoverObservationSettings(
-            const std::map< double, double >& crossoverTimes,
+            const std::map< long double, long double >& crossoverTimes,
             const std::string& centralBody,
             const std::shared_ptr< ObservationBiasSettings > biasSettings = nullptr ):
         ObservationSettings( altimetry_crossover, nullptr, biasSettings ), crossoverTimes_( crossoverTimes ),
@@ -488,7 +488,7 @@ public:
     //! Destructor
     ~AltimetryCrossoverObservationSettings( ){ }
 
-    std::map< double, double > crossoverTimes_;
+    std::map< long double, long double > crossoverTimes_;
 
     std::string centralBody_;
 

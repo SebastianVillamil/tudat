@@ -43,7 +43,7 @@ public:
             const std::function< StateType( const TimeType ) > firstArcBodyStateFunction,
             const std::function< StateType( const TimeType ) > secondArcBodyStateFunction,
             const std::string& centralBody,
-            const std::map< double, double >& crossoverTimes,
+            const std::map< long double, long double >& crossoverTimes,
             const std::shared_ptr< ObservationBias< 1 > > observationBiasCalculator = nullptr ):
         ObservationModel< 1, ObservationScalarType, TimeType >( altimetry_crossover, observationBiasCalculator ),
         firstArcBodyStateFunction_( firstArcBodyStateFunction ), secondArcBodyStateFunction_( secondArcBodyStateFunction ),
@@ -119,9 +119,10 @@ public:
 //        XoverData.push_back( static_cast< double >( secondArcState.segment( 0, 3 ).norm( ) ) );
 
         // When using std::vector< double >& linkEndTimes (compiles)
-//        linkEndTimes.push_back( static_cast< double >( secondArcTime ) );
-//        linkEndTimes.push_back( static_cast< double >( firstArcState.segment( 0, 3 ).norm( ) ) );
-//        linkEndTimes.push_back( static_cast< double >( secondArcState.segment( 0, 3 ).norm( ) ) );
+        linkEndTimes.push_back( static_cast< double >( secondArcTime ) );
+        linkEndTimes.push_back( static_cast< double >( firstArcState.segment( 0, 3 ).norm( ) ) );
+        linkEndTimes.push_back( static_cast< double >( secondArcState.segment( 0, 3 ).norm( ) ) );
+        linkEndTimes.push_back( static_cast< double >( crossoverAltimetryObservation ) );
 
         // When using Eigen::VectorXd& LinkEndTimes (doesn't compile)
 //        LinkEndTimes[0] = secondArcTime;
@@ -145,7 +146,7 @@ private:
 
     std::string centralBody_;
 
-    std::map< double, double > crossoverTimes_;
+    std::map< long double, long double > crossoverTimes_;
 
 };
 
