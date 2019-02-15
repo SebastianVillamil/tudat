@@ -43,7 +43,7 @@ public:
             const std::function< StateType( const TimeType ) > firstArcBodyStateFunction,
             const std::function< StateType( const TimeType ) > secondArcBodyStateFunction,
             const std::string& centralBody,
-            const std::map< long double, long double >& crossoverTimes,
+            const std::map< double, double >& crossoverTimes,
             const std::shared_ptr< ObservationBias< 1 > > observationBiasCalculator = nullptr ):
         ObservationModel< 1, ObservationScalarType, TimeType >( altimetry_crossover, observationBiasCalculator ),
         firstArcBodyStateFunction_( firstArcBodyStateFunction ), secondArcBodyStateFunction_( secondArcBodyStateFunction ),
@@ -58,12 +58,9 @@ public:
     {
         std::vector< double > linkEndTimes;
         std::vector< Eigen::Matrix< double, 6, 1 > > linkEndStates;
-//        Eigen::VectorXd linkEndTimes;
-//        std::vector< double > XoverData; // take this out later
 
         return computeIdealObservationsWithLinkEndData(
                     time, linkEndAssociatedWithTime, linkEndTimes, linkEndStates );
-//                    time, linkEndAssociatedWithTime, linkEndTimes, linkEndStates, XoverData ); // take this out later
     }
 
     //! Function to compute one-way range observable without any corrections.
@@ -85,10 +82,7 @@ public:
                     const TimeType time,
                     const LinkEndType linkEndAssociatedWithTime,
                     std::vector< double >& linkEndTimes,
-//                    Eigen::VectorXd& LinkEndTimes,
                     std::vector< Eigen::Matrix< double, 6, 1 > >& linkEndStates )
-//                    std::vector< Eigen::Matrix< double, 6, 1 > >& linkEndStates, // take this out later
-//                    std::vector< double >& XoverData ) // take this out later
     {
         // y do i need to clear them?
         linkEndTimes.clear( );
@@ -146,7 +140,7 @@ private:
 
     std::string centralBody_;
 
-    std::map< long double, long double > crossoverTimes_;
+    std::map< double, double > crossoverTimes_;
 
 };
 
