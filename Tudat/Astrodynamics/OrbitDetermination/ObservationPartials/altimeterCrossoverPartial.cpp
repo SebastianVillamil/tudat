@@ -54,44 +54,46 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
         const observation_models::LinkEndType linkEndOfFixedTime,
         const Eigen::Vector1d& currentObservation )
 {
-
+    std::cout << "finally." << std::endl;
+    // std::vector< std::pair< Eigen::Matrix< double, 1, Eigen::Dynamic >, double > >
     AltimeterCrossoverPartialReturnType returnPartial;
 
     // Iterate over all link ends
     for( positionPartialIterator_ = positionPartialList_.begin( ); positionPartialIterator_ != positionPartialList_.end( );
          positionPartialIterator_++ )
     {
-        if( positionPartialIterator_->first == observation_models::transmitter )
+        // The current partial relates to the state at arc 1.
+        if( positionPartialIterator_->first == observation_models::first_arc_body )
         {
             currentState_  = states[ 0 ];
             currentTime_ = times[ 0 ];
         }
-        else if( positionPartialIterator_->first == observation_models::receiver )
+        // The current partial relates to the state at arc 2.
+        else if( positionPartialIterator_->first == observation_models::second_arc_body )
         {
             currentState_  = states[ 1 ];
             currentTime_ = times[ 1 ];
         }
 
-        // IMPLEMENT PARTIAL MODEL HERE
-//        // Scale position partials
-//        returnPartial.push_back(
-//                    std::make_pair(
-//                        AltimeterCrossoverScaler_->getScalingFactor( positionPartialIterator_->first ) *
-//                        ( positionPartialIterator_->second->calculatePartialOfPosition(
-//                              currentState_ , currentTime_ ) ), currentTime_ ) );
-    }
+        Eigen::Matrix< double, 3, Eigen::Dynamic > currentInertialPositionPartialWrtParameter =
+                positionPartialIterator_->second->calculatePartialOfPosition(
+                                      currentState_ , currentTime_ );
 
-//    // Add scaled light-time correcion partials.
-//    for( unsigned int i = 0; i < lighTimeCorrectionPartialsFunctions_.size( ); i++ )
-//    {
-//        returnPartial.push_back( lighTimeCorrectionPartialsFunctions_.at( i )( states, times ) );
-//        returnPartial[ returnPartial.size( ) - 1 ].first *=
-//                physical_constants::SPEED_OF_LIGHT * AltimeterCrossoverScaler_->getLightTimePartialScalingFactor( );
-//    }
+        // IMPLEMENT HERE: PARTIAL DERIVATIVE OF YOUR CROSSOVER OBSERVATION W.R.T. THE CURRENT STATE
+        // originally: Eigen::Matrix< double, 1, 3 >
+        Eigen::Matrix< double, 3, 1 > observationPartialWrtCurrentPosition; // = ....
+        observationPartialWrtCurrentPosition << 1, 1, 1;
+
+        // Set partial output
+        returnPartial.push_back(
+                    std::make_pair(
+                        currentInertialPositionPartialWrtParameter * observationPartialWrtCurrentPosition,
+                        currentTime_ ) );
+    }
 
     return returnPartial;
 }
 
-}
+} // namespace observation_partials
 
-}
+} // namespace tudat

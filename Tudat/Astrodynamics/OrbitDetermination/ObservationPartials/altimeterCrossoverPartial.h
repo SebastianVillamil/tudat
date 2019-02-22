@@ -30,7 +30,7 @@ namespace observation_partials
 {
 
 
-class AltimeterCrossoverScaling: public PositionPartialScaling
+class AltimeterCrossoverScaling: public PositionPartialScaling  // ignore scaling
 {
 public:
 
@@ -49,11 +49,10 @@ class AltimeterCrossoverPartial: public ObservationPartial< 1 >
 {
 
 public:
-
     typedef std::vector< std::pair< Eigen::Matrix< double, 1, Eigen::Dynamic >, double > > AltimeterCrossoverPartialReturnType;
     typedef std::pair< Eigen::Matrix< double, 1, Eigen::Dynamic >, double > SingleAltimeterCrossoverPartialReturnType;
 
-    AltimeterCrossoverPartial(
+    AltimeterCrossoverPartial(  // this is the constructor
             const std::shared_ptr< AltimeterCrossoverScaling > altimeterCrossoverScaler,
             const std::map< observation_models::LinkEndType, std::shared_ptr< CartesianStatePartial > >& positionPartialList,
             const estimatable_parameters::EstimatebleParameterIdentifier parameterIdentifier,
@@ -146,10 +145,8 @@ protected:
 
 };
 
-}
+} // namespace observation_partials
 
-}
-
-
+} // namespace tudat
 
 #endif // TUDAT_ALTIMETERCROSSOVERPARTIAL_H

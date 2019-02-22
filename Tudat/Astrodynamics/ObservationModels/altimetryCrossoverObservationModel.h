@@ -38,7 +38,6 @@ public:
     typedef Eigen::Matrix< ObservationScalarType, 6, 1 > StateType;
     typedef Eigen::Matrix< ObservationScalarType, 3, 1 > PositionType;
 
-
     AltimetryCrossoverObservationModel(
             const std::function< StateType( const TimeType ) > firstArcBodyStateFunction,
             const std::function< StateType( const TimeType ) > secondArcBodyStateFunction,
