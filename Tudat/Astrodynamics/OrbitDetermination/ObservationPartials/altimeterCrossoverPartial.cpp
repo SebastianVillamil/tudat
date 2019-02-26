@@ -54,7 +54,7 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
         const observation_models::LinkEndType linkEndOfFixedTime,
         const Eigen::Vector1d& currentObservation )
 {
-    std::cout << "finally." << std::endl;
+    std::cout << "You've made it to altimeterCrossoverPartial.cpp!" << std::endl;
     // std::vector< std::pair< Eigen::Matrix< double, 1, Eigen::Dynamic >, double > >
     AltimeterCrossoverPartialReturnType returnPartial;
 
@@ -65,12 +65,14 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
         // The current partial relates to the state at arc 1.
         if( positionPartialIterator_->first == observation_models::first_arc_body )
         {
+            std::cout << "first loop!" << std::endl;
             currentState_  = states[ 0 ];
             currentTime_ = times[ 0 ];
         }
         // The current partial relates to the state at arc 2.
         else if( positionPartialIterator_->first == observation_models::second_arc_body )
         {
+            std::cout << "second loop!" << std::endl;
             currentState_  = states[ 1 ];
             currentTime_ = times[ 1 ];
         }
@@ -81,8 +83,9 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
 
         // IMPLEMENT HERE: PARTIAL DERIVATIVE OF YOUR CROSSOVER OBSERVATION W.R.T. THE CURRENT STATE
         // originally: Eigen::Matrix< double, 1, 3 >
-        Eigen::Matrix< double, 3, 1 > observationPartialWrtCurrentPosition; // = ....
-        observationPartialWrtCurrentPosition << 1, 1, 1;
+        double rho = currentState_.segment( 0, 3 ).norm( );
+        Eigen::Matrix< double, 3, 1 > observationPartialWrtCurrentPosition = (1/rho)*currentState_.segment( 0, 3 );
+//        observationPartialWrtCurrentPosition << 1, 1, 1;
 
         // Set partial output
         returnPartial.push_back(
