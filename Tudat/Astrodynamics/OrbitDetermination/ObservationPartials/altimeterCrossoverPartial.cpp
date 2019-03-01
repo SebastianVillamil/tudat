@@ -58,6 +58,10 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
     // std::vector< std::pair< Eigen::Matrix< double, 1, Eigen::Dynamic >, double > >
     AltimeterCrossoverPartialReturnType returnPartial;
 
+    Eigen::Matrix< double, 3, 1 > firstArcPartialWrtCurrentPosition;
+    Eigen::Matrix< double, 3, 1 > secondArcPartialWrtCurrentPosition;
+    Eigen::Matrix< double, 3, 1 > observationPartialWrtCurrentPosition;
+
     // Iterate over all link ends
     for( positionPartialIterator_ = positionPartialList_.begin( ); positionPartialIterator_ != positionPartialList_.end( );
          positionPartialIterator_++ )
@@ -68,6 +72,13 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
 //            std::cout << "first loop!" << std::endl;
             currentState_  = states[ 0 ];
             currentTime_ = times[ 0 ];
+
+            Eigen::Matrix< double, 3, Eigen::Dynamic > currentInertialPositionPartialWrtParameter =
+                    positionPartialIterator_->second->calculatePartialOfPosition(
+                                          currentState_ , currentTime_ );
+            double rho = currentState_.segment( 0, 3 ).norm( );
+            firstArcPartialWrtCurrentPosition << ( currentInertialPositionPartialWrtParameter *
+                                                   ( (1/rho)*currentState_.segment( 0, 3 ) ) );
         }
         // The current partial relates to the state at arc 2.
         else if( positionPartialIterator_->first == observation_models::second_arc_body )
@@ -75,28 +86,23 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
 //            std::cout << "second loop!" << std::endl;
             currentState_  = states[ 1 ];
             currentTime_ = times[ 1 ];
+
+            Eigen::Matrix< double, 3, Eigen::Dynamic > currentInertialPositionPartialWrtParameter =
+                    positionPartialIterator_->second->calculatePartialOfPosition(
+                                          currentState_ , currentTime_ );
+            double rho = currentState_.segment( 0, 3 ).norm( );
+            secondArcPartialWrtCurrentPosition << ( currentInertialPositionPartialWrtParameter *
+                                                    ( (1/rho)*currentState_.segment( 0, 3 ) ) );
         }
-
-        Eigen::Matrix< double, 3, Eigen::Dynamic > currentInertialPositionPartialWrtParameter =
-                positionPartialIterator_->second->calculatePartialOfPosition(
-                                      currentState_ , currentTime_ );
-
-        // IMPLEMENT HERE: PARTIAL DERIVATIVE OF YOUR CROSSOVER OBSERVATION W.R.T. THE CURRENT STATE
-        // originally: Eigen::Matrix< double, 1, 3 >
-        double rho = currentState_.segment( 0, 3 ).norm( );
-        Eigen::Matrix< double, 3, 1 > observationPartialWrtCurrentPosition;
-
-//        observationPartialWrtCurrentPosition << (1/rho)*currentState_.segment( 0, 3 );
-//        observationPartialWrtCurrentPosition << 1, 1, 1;
-        observationPartialWrtCurrentPosition << 0, 0, 0;
-
-        // Set partial output
-        returnPartial.push_back(
-                    std::make_pair(
-                        observationPartialWrtCurrentPosition,
-//                        currentInertialPositionPartialWrtParameter * observationPartialWrtCurrentPosition,
-                        currentTime_ ) );
     }
+
+//        observationPartialWrtCurrentPosition << 1, 1, 1;
+//        observationPartialWrtCurrentPosition << 0, 0, 0;
+    observationPartialWrtCurrentPosition << ( secondArcPartialWrtCurrentPosition -
+                                              firstArcPartialWrtCurrentPosition);
+    // Set partial output
+    returnPartial.push_back(
+                std::make_pair( observationPartialWrtCurrentPosition, times[ 0 ] ) );
 
     return returnPartial;
 }

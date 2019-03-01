@@ -93,7 +93,24 @@ public:
         StateType firstArcState = firstArcBodyStateFunction_( firstArcTime );
         StateType secondArcState = secondArcBodyStateFunction_( secondArcTime );
 
-        crossoverAltimetryObservation = firstArcState.segment( 0, 3 ).norm( )-secondArcState.segment( 0, 3 ).norm( );
+        switch ( linkEndAssociatedWithTime )
+        {
+        case first_arc_body:
+
+            break;
+
+        case second_arc_body:
+
+            break;
+
+        default:
+            std::string errorMessage = "Error, cannot have link end type: " +
+                    std::to_string( linkEndAssociatedWithTime ) + "for altimetry crossover";
+            throw std::runtime_error( errorMessage );
+        }
+
+        crossoverAltimetryObservation = ( secondArcState.segment( 0, 3 ).norm( ) -
+                                          firstArcState.segment( 0, 3 ).norm( ) );
 
         linkEndTimes.push_back( static_cast< double >( firstArcTime ) );
         linkEndTimes.push_back( static_cast< double >( secondArcTime ) );
@@ -127,7 +144,8 @@ public:
         StateType secondArcState = secondArcBodyStateFunction_( secondArcTime );
 
         ObservationScalarType crossoverAltimetryObservation;
-        crossoverAltimetryObservation = firstArcState.segment( 0, 3 ).norm( )-secondArcState.segment( 0, 3 ).norm( );
+        crossoverAltimetryObservation = ( secondArcState.segment( 0, 3 ).norm( ) -
+                                          firstArcState.segment( 0, 3 ).norm( ));
 
 //        std::vector< double > XoverDataVector;
 //        XoverDataVector.push_back( static_cast< double >( secondArcTime ) );
@@ -135,11 +153,11 @@ public:
 //        XoverDataVector.push_back( static_cast< double >( secondArcState.segment( 0, 3 ).norm( ) ) );
 //        XoverDataVector.push_back( static_cast< double >( crossoverAltimetryObservation ) );
 
-        Eigen::VectorXd XoverDataVector(4);
-        XoverDataVector << secondArcTime;
-        XoverDataVector << ( firstArcState.segment( 0, 3 ).norm( ) );
-        XoverDataVector << ( secondArcState.segment( 0, 3 ).norm( ) );
-        XoverDataVector << crossoverAltimetryObservation;
+        Eigen::VectorXd XoverDataVector( 4 );
+        XoverDataVector[ 0 ] = secondArcTime;
+        XoverDataVector[ 1 ] = ( firstArcState.segment( 0, 3 ).norm( ) );
+        XoverDataVector[ 2 ] = ( secondArcState.segment( 0, 3 ).norm( ) );
+        XoverDataVector[ 3 ] = crossoverAltimetryObservation;
 
         return ( XoverDataVector );
     }
