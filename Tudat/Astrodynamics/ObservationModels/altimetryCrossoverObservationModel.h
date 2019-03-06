@@ -83,34 +83,40 @@ public:
                     std::vector< double >& linkEndTimes,
                     std::vector< Eigen::Matrix< double, 6, 1 > >& linkEndStates )
     {
-        // y do i need to clear them?
         linkEndTimes.clear( );
         linkEndStates.clear( );
 
         ObservationScalarType crossoverAltimetryObservation = TUDAT_NAN;
-        // Add if checks for the existency of t1 & t2 &  switch( linkEndAssociatedWithTime )
-        TimeType firstArcTime = time, secondArcTime = crossoverTimes_[ time ];
-        StateType firstArcState = firstArcBodyStateFunction_( firstArcTime );
-        StateType secondArcState = secondArcBodyStateFunction_( secondArcTime );
+        // Add if checks for the existency of t1 & t2
+        TimeType firstArcTime = TUDAT_NAN;
+        TimeType secondArcTime = TUDAT_NAN;
+        StateType firstArcState;
+        StateType secondArcState;
 
         switch ( linkEndAssociatedWithTime )
         {
         case first_arc_body:
+            firstArcTime = time;
+            secondArcTime = crossoverTimes_[ time ];
+            firstArcState = firstArcBodyStateFunction_( firstArcTime );
+            secondArcState = secondArcBodyStateFunction_( secondArcTime );
 
+            crossoverAltimetryObservation = ( secondArcState.segment( 0, 3 ).norm( ) -
+                                              firstArcState.segment( 0, 3 ).norm( ) );
             break;
 
-        case second_arc_body:
-
-            break;
+//        case second_arc_body:
+//            std::cout << "HOW DID I GET HERE" << std::endl;
+//            std::string ArcErrorMessage = "Error, linkEndAssociatedWithTime: " +
+//                    std::to_string( linkEndAssociatedWithTime ) + "not yet implemented.";
+//            throw std::runtime_error( ArcErrorMessage );
+//            break;
 
         default:
             std::string errorMessage = "Error, cannot have link end type: " +
                     std::to_string( linkEndAssociatedWithTime ) + "for altimetry crossover";
             throw std::runtime_error( errorMessage );
         }
-
-        crossoverAltimetryObservation = ( secondArcState.segment( 0, 3 ).norm( ) -
-                                          firstArcState.segment( 0, 3 ).norm( ) );
 
         linkEndTimes.push_back( static_cast< double >( firstArcTime ) );
         linkEndTimes.push_back( static_cast< double >( secondArcTime ) );

@@ -66,10 +66,11 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
     for( positionPartialIterator_ = positionPartialList_.begin( ); positionPartialIterator_ != positionPartialList_.end( );
          positionPartialIterator_++ )
     {
+//        observationPartialWrtCurrentPosition = TUDAT_NAN;
+
         // The current partial relates to the state at arc 1.
         if( positionPartialIterator_->first == observation_models::first_arc_body )
         {
-//            std::cout << "first loop!" << std::endl;
             currentState_  = states[ 0 ];
             currentTime_ = times[ 0 ];
 
@@ -79,11 +80,20 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             double rho = currentState_.segment( 0, 3 ).norm( );
             firstArcPartialWrtCurrentPosition << ( currentInertialPositionPartialWrtParameter *
                                                    ( (1/rho)*currentState_.segment( 0, 3 ) ) );
+            // beware the MINUS!
+            observationPartialWrtCurrentPosition = - ( currentInertialPositionPartialWrtParameter *
+                                                    firstArcPartialWrtCurrentPosition );
+            if( currentTime_ == 1045468254.9337769 )
+            {
+                std::cout << std::setprecision(17) << "\n state first_arc_body says: \n" << currentState_ << std::endl;
+                std::cout << std::setprecision(17) << "Partials first_arc_body says: \n" << observationPartialWrtCurrentPosition << std::endl;
+            }
+            returnPartial.push_back(
+                        std::make_pair( observationPartialWrtCurrentPosition, currentTime_ ) );
         }
         // The current partial relates to the state at arc 2.
         else if( positionPartialIterator_->first == observation_models::second_arc_body )
         {
-//            std::cout << "second loop!" << std::endl;
             currentState_  = states[ 1 ];
             currentTime_ = times[ 1 ];
 
@@ -93,16 +103,26 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             double rho = currentState_.segment( 0, 3 ).norm( );
             secondArcPartialWrtCurrentPosition << ( currentInertialPositionPartialWrtParameter *
                                                     ( (1/rho)*currentState_.segment( 0, 3 ) ) );
+            observationPartialWrtCurrentPosition = ( currentInertialPositionPartialWrtParameter *
+                                                    secondArcPartialWrtCurrentPosition );
+            if( currentTime_ == 1045731864.6734756 )
+            {
+                std::cout << std::setprecision(17) << "\n state second_arc_body says: \n" << currentState_ << std::endl;
+                std::cout << std::setprecision(17) << "Partials second_arc_body says: \n" << observationPartialWrtCurrentPosition << std::endl;
+            }
+            returnPartial.push_back(
+                        std::make_pair( observationPartialWrtCurrentPosition, currentTime_ ) );
+
         }
     }
 
 //        observationPartialWrtCurrentPosition << 1, 1, 1;
 //        observationPartialWrtCurrentPosition << 0, 0, 0;
-    observationPartialWrtCurrentPosition << ( secondArcPartialWrtCurrentPosition -
-                                              firstArcPartialWrtCurrentPosition);
+//    observationPartialWrtCurrentPosition << ( secondArcPartialWrtCurrentPosition -
+//                                              firstArcPartialWrtCurrentPosition);
     // Set partial output
-    returnPartial.push_back(
-                std::make_pair( observationPartialWrtCurrentPosition, times[ 0 ] ) );
+//    returnPartial.push_back(
+//                std::make_pair( observationPartialWrtCurrentPosition, times[ 0 ] ) );
 
     return returnPartial;
 }
