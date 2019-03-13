@@ -386,6 +386,16 @@ protected:
                     partialMatrix += ( singlePartialSet[ i ].first ) *
                             combinedStateTransitionMatrices[ singlePartialSet[ i ].second ].block
                             ( currentIndexInfo.first, 0, currentIndexInfo.second, fullParameterVector );
+                    if(singlePartialSet[i].second == 1045468254.9337766)
+                    {
+                        std::cout << "THE PARTIAL AT T1 IS" << std::endl;
+                        std::cout << std::setprecision(17)<< partialMatrix << std::endl;
+                    }
+                    if(singlePartialSet[i].second == 1045731864.6734738)
+                    {
+                        std::cout << "THE PARTIAL AT T2 IS" << std::endl;
+                        std::cout << std::setprecision(17)<< partialMatrix << std::endl;
+                    }
                 }
             }
             else

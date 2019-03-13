@@ -83,11 +83,11 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             // beware the MINUS!
             observationPartialWrtCurrentPosition = - ( currentInertialPositionPartialWrtParameter *
                                                     firstArcPartialWrtCurrentPosition );
-            if( currentTime_ == 1045468254.9337769 )
-            {
-                std::cout << std::setprecision(17) << "\n state first_arc_body says: \n" << currentState_ << std::endl;
-                std::cout << std::setprecision(17) << "Partials first_arc_body says: \n" << observationPartialWrtCurrentPosition << std::endl;
-            }
+//            if( currentTime_ == 1045468254.9337766 )
+//            {
+//                std::cout << std::setprecision(17) << "\n state first_arc_body says: \n" << currentState_ << std::endl;
+//                std::cout << std::setprecision(17) << "Partials first_arc_body says: \n" << observationPartialWrtCurrentPosition << std::endl;
+//            }
             returnPartial.push_back(
                         std::make_pair( observationPartialWrtCurrentPosition, currentTime_ ) );
         }
@@ -105,11 +105,11 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
                                                     ( (1/rho)*currentState_.segment( 0, 3 ) ) );
             observationPartialWrtCurrentPosition = ( currentInertialPositionPartialWrtParameter *
                                                     secondArcPartialWrtCurrentPosition );
-            if( currentTime_ == 1045731864.6734756 )
-            {
-                std::cout << std::setprecision(17) << "\n state second_arc_body says: \n" << currentState_ << std::endl;
-                std::cout << std::setprecision(17) << "Partials second_arc_body says: \n" << observationPartialWrtCurrentPosition << std::endl;
-            }
+//            if( currentTime_ == 1045731864.6734738 )
+//            {
+//                std::cout << std::setprecision(17) << "\n state second_arc_body says: \n" << currentState_ << std::endl;
+//                std::cout << std::setprecision(17) << "Partials second_arc_body says: \n" << observationPartialWrtCurrentPosition << std::endl;
+//            }
             returnPartial.push_back(
                         std::make_pair( observationPartialWrtCurrentPosition, currentTime_ ) );
 
