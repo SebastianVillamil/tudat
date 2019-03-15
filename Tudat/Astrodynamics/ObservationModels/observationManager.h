@@ -386,15 +386,31 @@ protected:
                     partialMatrix += ( singlePartialSet[ i ].first ) *
                             combinedStateTransitionMatrices[ singlePartialSet[ i ].second ].block
                             ( currentIndexInfo.first, 0, currentIndexInfo.second, fullParameterVector );
-                    if(singlePartialSet[i].second == 1045468254.9337766)
+                    if(singlePartialSet[i].second == 1045478283.708825 )
                     {
-                        std::cout << "THE PARTIAL AT T1 IS" << std::endl;
-                        std::cout << std::setprecision(17)<< partialMatrix << std::endl;
+                        std::cout << std::endl << std::setprecision(17) << "for t1: " << singlePartialSet[i].second << std::endl;
+                        std::cout << "dh/dx(t1) (from observationManager.h): " << std::endl;
+                        std::cout << std::setprecision(17)<< ( singlePartialSet[ i ].first ) << std::endl;
+                        std::cout << "Phi(t1,t0) (from observationManager.h): " << std::endl;
+                        std::cout << std::setprecision(17)<< combinedStateTransitionMatrices[ singlePartialSet[ i ].second ].block
+                                     ( currentIndexInfo.first, 0, currentIndexInfo.second, fullParameterVector ) << std::endl;
+                        std::cout <<"dh/dx(t1)*Phi(t1,t0) (from observationManager.h): " << std::endl;
+                        std::cout << std::setprecision(17)<< partialMatrix << std::endl << std::endl;
                     }
-                    if(singlePartialSet[i].second == 1045731864.6734738)
+                    if(singlePartialSet[i].second == 1045489321.9936566 )
                     {
-                        std::cout << "THE PARTIAL AT T2 IS" << std::endl;
-                        std::cout << std::setprecision(17)<< partialMatrix << std::endl;
+                        std::cout << std::setprecision(17) << "for t2: " << singlePartialSet[i].second << std::endl;
+                        std::cout << "dh/dx(t2) (from observationManager.h): " << std::endl;
+                        std::cout << std::setprecision(17)<< ( singlePartialSet[ i ].first ) << std::endl;
+                        std::cout << "Phi(t2,t0) (from observationManager.h): " << std::endl;
+                        std::cout << std::setprecision(17)<< combinedStateTransitionMatrices[ singlePartialSet[ i ].second ].block
+                                     ( currentIndexInfo.first, 0, currentIndexInfo.second, fullParameterVector ) << std::endl;
+                        std::cout <<"dh/dx(t2)*Phi(t2,t0) (from observationManager.h): " << std::endl;
+                        std::cout << std::setprecision(17)<< ( singlePartialSet[ i ].first ) *
+                                     combinedStateTransitionMatrices[ singlePartialSet[ i ].second ].block
+                                     ( currentIndexInfo.first, 0, currentIndexInfo.second, fullParameterVector ) << std::endl;
+                        std::cout << std::endl<<"dh/dx(t1)*Phi(t1,t0) + dh/dx(t2)*Phi(t2,t0) (from observationManager.h): " << std::endl;
+                        std::cout << std::setprecision(17)<< partialMatrix << std::endl << std::endl;
                     }
                 }
             }

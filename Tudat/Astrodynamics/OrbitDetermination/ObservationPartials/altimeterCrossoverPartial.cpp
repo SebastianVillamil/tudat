@@ -74,6 +74,8 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             currentState_  = states[ 0 ];
             currentTime_ = times[ 0 ];
 
+            std::cout << std::setprecision(17) << std::endl << "for t1: " << currentTime_ << std::endl;
+            std::cout << std::setprecision(17) << "the state vector x(t1) is (from altimeterCrossoverPartial.cpp): \n" << currentState_.transpose() << std::endl;
             Eigen::Matrix< double, 3, Eigen::Dynamic > currentInertialPositionPartialWrtParameter =
                     positionPartialIterator_->second->calculatePartialOfPosition(
                                           currentState_ , currentTime_ );
@@ -97,6 +99,8 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             currentState_  = states[ 1 ];
             currentTime_ = times[ 1 ];
 
+            std::cout << std::setprecision(17) << std::endl << "for t2: " << currentTime_ << std::endl;
+            std::cout << "the state vector x(t2) is (from altimeterCrossoverPartial.cpp): \n" << currentState_.transpose() << std::endl;
             Eigen::Matrix< double, 3, Eigen::Dynamic > currentInertialPositionPartialWrtParameter =
                     positionPartialIterator_->second->calculatePartialOfPosition(
                                           currentState_ , currentTime_ );
@@ -123,6 +127,15 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
     // Set partial output
 //    returnPartial.push_back(
 //                std::make_pair( observationPartialWrtCurrentPosition, times[ 0 ] ) );
+
+//    if( times[ 0 ] == 1045468254.9337766 || times[ 1 ] == 1045731864.6734738 )
+//    {
+//        std::cout << std::setprecision(17)<<times[ 0 ] << std::endl;
+//        std::cout << std::setprecision(17)<<times[ 1 ] << std::endl;
+//        std::cout << returnPartial.size() << std::endl;
+//        std::cout << std::setprecision(17)<< returnPartial[0].first << std::endl;
+//        std::cout << std::setprecision(17)<< returnPartial[1].first << std::endl;
+//    }
 
     return returnPartial;
 }
