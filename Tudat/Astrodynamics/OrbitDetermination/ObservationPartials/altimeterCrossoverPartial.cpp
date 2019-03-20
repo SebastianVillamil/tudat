@@ -74,8 +74,11 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             currentState_  = states[ 0 ];
             currentTime_ = times[ 0 ];
 
-            std::cout << std::setprecision(17) << std::endl << "for t1: " << currentTime_ << std::endl;
-            std::cout << std::setprecision(17) << "the state vector x(t1) is (from altimeterCrossoverPartial.cpp): \n" << currentState_.transpose() << std::endl;
+            if(currentTime_ == 1045478283.708825 )
+            {
+                std::cout << std::setprecision(17) << std::endl << "for t1: " << currentTime_ << std::endl;
+                std::cout << "the state vector x(t1) is (from altimeterCrossoverPartial.cpp): \n" << currentState_.transpose() << std::endl;
+            }
             Eigen::Matrix< double, 3, Eigen::Dynamic > currentInertialPositionPartialWrtParameter =
                     positionPartialIterator_->second->calculatePartialOfPosition(
                                           currentState_ , currentTime_ );
@@ -99,8 +102,11 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             currentState_  = states[ 1 ];
             currentTime_ = times[ 1 ];
 
-            std::cout << std::setprecision(17) << std::endl << "for t2: " << currentTime_ << std::endl;
-            std::cout << "the state vector x(t2) is (from altimeterCrossoverPartial.cpp): \n" << currentState_.transpose() << std::endl;
+            if(currentTime_ == 1045489321.9936566 )
+            {
+                std::cout << std::setprecision(17) << std::endl << "for t2: " << currentTime_ << std::endl;
+                std::cout << "the state vector x(t2) is (from altimeterCrossoverPartial.cpp): \n" << currentState_.transpose() << std::endl;
+            }
             Eigen::Matrix< double, 3, Eigen::Dynamic > currentInertialPositionPartialWrtParameter =
                     positionPartialIterator_->second->calculatePartialOfPosition(
                                           currentState_ , currentTime_ );
