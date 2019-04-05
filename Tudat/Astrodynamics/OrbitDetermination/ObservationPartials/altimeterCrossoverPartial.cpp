@@ -16,7 +16,6 @@ namespace tudat
 namespace observation_partials
 {
 
-
 ////! Update the scaling object to the current times and states
 //void AltimeterCrossoverScaling::update( const std::vector< Eigen::Vector6d >& linkEndStates,
 //                                 const std::vector< double >& times,
@@ -54,95 +53,72 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
         const observation_models::LinkEndType linkEndOfFixedTime,
         const Eigen::Vector1d& currentObservation )
 {
-//    std::cout << "You've made it to altimeterCrossoverPartial.cpp!" << std::endl;
-    // std::vector< std::pair< Eigen::Matrix< double, 1, Eigen::Dynamic >, double > >
     AltimeterCrossoverPartialReturnType returnPartial;
 
     Eigen::Matrix< double, 3, 1 > firstArcPartialWrtCurrentPosition;
     Eigen::Matrix< double, 3, 1 > secondArcPartialWrtCurrentPosition;
-    Eigen::Matrix< double, 3, 1 > observationPartialWrtCurrentPosition;
+    Eigen::MatrixXd observationPartialWrtCurrentState = Eigen::MatrixXd::Zero( 1, 6 );
 
     // Iterate over all link ends
     for( positionPartialIterator_ = positionPartialList_.begin( ); positionPartialIterator_ != positionPartialList_.end( );
          positionPartialIterator_++ )
     {
-//        observationPartialWrtCurrentPosition = TUDAT_NAN;
-
-        // The current partial relates to the state at arc 1.
         if( positionPartialIterator_->first == observation_models::first_arc_body )
         {
             currentState_  = states[ 0 ];
             currentTime_ = times[ 0 ];
 
-            if(currentTime_ == 1045478283.708825 )
-            {
-                std::cout << std::setprecision(17) << std::endl << "for t1: " << currentTime_ << std::endl;
-                std::cout << "the state vector x(t1) is (from altimeterCrossoverPartial.cpp): \n" << currentState_.transpose() << std::endl;
-            }
             Eigen::Matrix< double, 3, Eigen::Dynamic > currentInertialPositionPartialWrtParameter =
                     positionPartialIterator_->second->calculatePartialOfPosition(
                                           currentState_ , currentTime_ );
             double rho = currentState_.segment( 0, 3 ).norm( );
-            firstArcPartialWrtCurrentPosition << ( currentInertialPositionPartialWrtParameter *
-                                                   ( (1/rho)*currentState_.segment( 0, 3 ) ) );
-            // beware the MINUS!
-            observationPartialWrtCurrentPosition = - ( currentInertialPositionPartialWrtParameter *
-                                                    firstArcPartialWrtCurrentPosition );
-//            if( currentTime_ == 1045468254.9337766 )
-//            {
-//                std::cout << std::setprecision(17) << "\n state first_arc_body says: \n" << currentState_ << std::endl;
-//                std::cout << std::setprecision(17) << "Partials first_arc_body says: \n" << observationPartialWrtCurrentPosition << std::endl;
-//            }
+
+            // Beware the MINUS, since xoverObs = |pos(t2)|-|pos(t1)|
+            firstArcPartialWrtCurrentPosition << - ( currentInertialPositionPartialWrtParameter *
+                                                   (1/rho)*currentState_.segment( 0, 3 ) );
+
+            observationPartialWrtCurrentState.block( 0, 0, 1, 3 ) =
+                    firstArcPartialWrtCurrentPosition.transpose();
+
             returnPartial.push_back(
-                        std::make_pair( observationPartialWrtCurrentPosition, currentTime_ ) );
+                        std::make_pair( observationPartialWrtCurrentState, currentTime_ ) );
+
+            if( currentTime_ == 1045408937.2387744 || currentTime_ == 1045406388.7029006 )
+            {
+                std::cout << std::endl << "-- PARTIAL DERIVATIVE TEST (from altimeterCrossoverPartial.cpp) --"
+                          << std::endl;
+                std::cout << std::setprecision(17) << "for t1: " << currentTime_ << std::endl;
+                std::cout << "The state vector s(t1) is: \n" <<
+                             currentState_.transpose() << std::endl;
+                std::cout << "The rossover observable is: " << std::endl << currentObservation << std::endl;
+                std::cout << "The pos.norm is: " << std::endl << rho << std::endl;
+                std::cout << "currentInertialPositionPartialWrtParameter: " << std::endl <<
+                             currentInertialPositionPartialWrtParameter << std::endl;
+                std::cout << "firstArcPartialWrtCurrentPosition: " << std::endl <<
+                             firstArcPartialWrtCurrentPosition << std::endl;
+                std::cout << "observationPartialWrtCurrentState: " << std::endl <<
+                             observationPartialWrtCurrentState << std::endl << std::endl;
+            } // */
         }
-        // The current partial relates to the state at arc 2.
         else if( positionPartialIterator_->first == observation_models::second_arc_body )
         {
             currentState_  = states[ 1 ];
             currentTime_ = times[ 1 ];
 
-            if(currentTime_ == 1045489321.9936566 )
-            {
-                std::cout << std::setprecision(17) << std::endl << "for t2: " << currentTime_ << std::endl;
-                std::cout << "the state vector x(t2) is (from altimeterCrossoverPartial.cpp): \n" << currentState_.transpose() << std::endl;
-            }
             Eigen::Matrix< double, 3, Eigen::Dynamic > currentInertialPositionPartialWrtParameter =
                     positionPartialIterator_->second->calculatePartialOfPosition(
                                           currentState_ , currentTime_ );
             double rho = currentState_.segment( 0, 3 ).norm( );
             secondArcPartialWrtCurrentPosition << ( currentInertialPositionPartialWrtParameter *
-                                                    ( (1/rho)*currentState_.segment( 0, 3 ) ) );
-            observationPartialWrtCurrentPosition = ( currentInertialPositionPartialWrtParameter *
-                                                    secondArcPartialWrtCurrentPosition );
-//            if( currentTime_ == 1045731864.6734738 )
-//            {
-//                std::cout << std::setprecision(17) << "\n state second_arc_body says: \n" << currentState_ << std::endl;
-//                std::cout << std::setprecision(17) << "Partials second_arc_body says: \n" << observationPartialWrtCurrentPosition << std::endl;
-//            }
-            returnPartial.push_back(
-                        std::make_pair( observationPartialWrtCurrentPosition, currentTime_ ) );
+                                                    (1/rho)*currentState_.segment( 0, 3 ) );
 
+            observationPartialWrtCurrentState.block( 0, 0, 1, 3 ) =
+                    secondArcPartialWrtCurrentPosition.transpose();
+
+            returnPartial.push_back(
+                        std::make_pair( observationPartialWrtCurrentState, currentTime_ ) );
         }
     }
-
-//        observationPartialWrtCurrentPosition << 1, 1, 1;
-//        observationPartialWrtCurrentPosition << 0, 0, 0;
-//    observationPartialWrtCurrentPosition << ( secondArcPartialWrtCurrentPosition -
-//                                              firstArcPartialWrtCurrentPosition);
-    // Set partial output
-//    returnPartial.push_back(
-//                std::make_pair( observationPartialWrtCurrentPosition, times[ 0 ] ) );
-
-//    if( times[ 0 ] == 1045468254.9337766 || times[ 1 ] == 1045731864.6734738 )
-//    {
-//        std::cout << std::setprecision(17)<<times[ 0 ] << std::endl;
-//        std::cout << std::setprecision(17)<<times[ 1 ] << std::endl;
-//        std::cout << returnPartial.size() << std::endl;
-//        std::cout << std::setprecision(17)<< returnPartial[0].first << std::endl;
-//        std::cout << std::setprecision(17)<< returnPartial[1].first << std::endl;
-//    }
-
     return returnPartial;
 }
 
