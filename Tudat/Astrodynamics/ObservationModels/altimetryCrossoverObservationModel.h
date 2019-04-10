@@ -106,7 +106,6 @@ public:
             break;
 
 //        case second_arc_body:
-//            std::cout << "HOW DID I GET HERE" << std::endl;
 //            std::string ArcErrorMessage = "Error, linkEndAssociatedWithTime: " +
 //                    std::to_string( linkEndAssociatedWithTime ) + "not yet implemented.";
 //            throw std::runtime_error( ArcErrorMessage );

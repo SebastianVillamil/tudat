@@ -83,7 +83,7 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             returnPartial.push_back(
                         std::make_pair( observationPartialWrtCurrentState, currentTime_ ) );
 
-            if( currentTime_ == 1045408937.2387744 || currentTime_ == 1045406388.7029006 )
+/*            if( currentTime_ == 1045408937.2387744 || currentTime_ == 1045406388.7029006 )
             {
                 std::cout << std::endl << "-- PARTIAL DERIVATIVE TEST (from altimeterCrossoverPartial.cpp) --"
                           << std::endl;
