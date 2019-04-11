@@ -152,18 +152,30 @@ public:
         crossoverAltimetryObservation = ( secondArcState.segment( 0, 3 ).norm( ) -
                                           firstArcState.segment( 0, 3 ).norm( ));
 
-//        std::vector< double > XoverDataVector;
-//        XoverDataVector.push_back( static_cast< double >( secondArcTime ) );
-//        XoverDataVector.push_back( static_cast< double >( firstArcState.segment( 0, 3 ).norm( ) ) );
-//        XoverDataVector.push_back( static_cast< double >( secondArcState.segment( 0, 3 ).norm( ) ) );
-//        XoverDataVector.push_back( static_cast< double >( crossoverAltimetryObservation ) );
+        double PosDotVel1 = (firstArcState.segment( 0, 3 ).transpose()*(firstArcState.segment( 3, 3 )));
+        double RadialVelt1 = PosDotVel1/(firstArcState.segment( 0, 3 ).norm( ));
 
-        Eigen::VectorXd XoverDataVector( 4 );
+        double PosDotVel2 = (secondArcState.segment( 0, 3 ).transpose()*(secondArcState.segment( 3, 3 )));
+        double RadialVelt2 = PosDotVel2/(secondArcState.segment( 0, 3 ).norm( ));
+
+        Eigen::VectorXd XoverDataVector( 8 );
         XoverDataVector[ 0 ] = secondArcTime;
         XoverDataVector[ 1 ] = ( firstArcState.segment( 0, 3 ).norm( ) );
         XoverDataVector[ 2 ] = ( secondArcState.segment( 0, 3 ).norm( ) );
         XoverDataVector[ 3 ] = crossoverAltimetryObservation;
+        XoverDataVector[ 4 ] = RadialVelt1;
+        XoverDataVector[ 5 ] = RadialVelt2;
+        XoverDataVector[ 6 ] = ( firstArcState.segment( 3, 3 ).norm( ) );
+        XoverDataVector[ 7 ] = ( secondArcState.segment( 3, 3 ).norm( ) );
 
+/*        if( time == 1045408937.2387744 || time == 1045406388.7029006 )
+        {
+            std::cout << std::endl << "-- PARTIAL DERIVATIVE TEST (from altimeterCrossoverPartial.cpp) --"
+                      << std::endl;
+            std::cout << std::setprecision(17) << "s(t1): \n" << firstArcState << std::endl;
+            std::cout << "firstArcState.segment( 3, 3 ).norm(): \n" <<
+                         firstArcState.segment( 3, 3 ).norm( ) << std::endl;
+        } // */
         return ( XoverDataVector );
     }
 

@@ -74,11 +74,10 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             double rho = currentState_.segment( 0, 3 ).norm( );
 
             // Beware the MINUS, since xoverObs = |pos(t2)|-|pos(t1)|
-            firstArcPartialWrtCurrentPosition << - ( currentInertialPositionPartialWrtParameter *
-                                                   (1/rho)*currentState_.segment( 0, 3 ) );
+            firstArcPartialWrtCurrentPosition << - ( (1/rho)*currentState_.segment( 0, 3 ) );
 
             observationPartialWrtCurrentState.block( 0, 0, 1, 3 ) =
-                    firstArcPartialWrtCurrentPosition.transpose();
+                    firstArcPartialWrtCurrentPosition.transpose() * 1.0; //  * -1.0 as ad-hoc fix
 
             returnPartial.push_back(
                         std::make_pair( observationPartialWrtCurrentState, currentTime_ ) );
@@ -88,15 +87,20 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
                 std::cout << std::endl << "-- PARTIAL DERIVATIVE TEST (from altimeterCrossoverPartial.cpp) --"
                           << std::endl;
                 std::cout << std::setprecision(17) << "for t1: " << currentTime_ << std::endl;
-                std::cout << "The state vector s(t1) is: \n" <<
+                std::cout << "\n The state vector s(t1) is: \n" <<
                              currentState_.transpose() << std::endl;
-                std::cout << "The rossover observable is: " << std::endl << currentObservation << std::endl;
-                std::cout << "The pos.norm is: " << std::endl << rho << std::endl;
-                std::cout << "currentInertialPositionPartialWrtParameter: " << std::endl <<
+
+                std::cout << "\n The rossover observable is: " << currentObservation << std::endl;
+
+                std::cout << "\n The pos.norm is: " << rho << std::endl;
+
+                std::cout << "\n currentInertialPositionPartialWrtParameter: " << std::endl <<
                              currentInertialPositionPartialWrtParameter << std::endl;
-                std::cout << "firstArcPartialWrtCurrentPosition: " << std::endl <<
+
+                std::cout << "\n firstArcPartialWrtCurrentPosition: " << std::endl <<
                              firstArcPartialWrtCurrentPosition << std::endl;
-                std::cout << "observationPartialWrtCurrentState: " << std::endl <<
+
+                std::cout << "\n observationPartialWrtCurrentState: " << std::endl <<
                              observationPartialWrtCurrentState << std::endl << std::endl;
             } // */
         }
@@ -109,14 +113,35 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
                     positionPartialIterator_->second->calculatePartialOfPosition(
                                           currentState_ , currentTime_ );
             double rho = currentState_.segment( 0, 3 ).norm( );
-            secondArcPartialWrtCurrentPosition << ( currentInertialPositionPartialWrtParameter *
-                                                    (1/rho)*currentState_.segment( 0, 3 ) );
+            secondArcPartialWrtCurrentPosition << ( (1/rho)*currentState_.segment( 0, 3 ) );
 
             observationPartialWrtCurrentState.block( 0, 0, 1, 3 ) =
-                    secondArcPartialWrtCurrentPosition.transpose();
+                    secondArcPartialWrtCurrentPosition.transpose() * 1.0; //  * -1.0 as ad-hoc fix
 
             returnPartial.push_back(
                         std::make_pair( observationPartialWrtCurrentState, currentTime_ ) );
+
+/*            if( times[ 0 ] == 1045408937.2387744 || times[ 0 ] == 1045406388.7029006 )
+            {
+                std::cout << std::endl << "-- PARTIAL DERIVATIVE TEST (from altimeterCrossoverPartial.cpp) --"
+                          << std::endl;
+                std::cout << std::setprecision(17) << "for t2: " << currentTime_ << std::endl;
+                std::cout << "\n The state vector s(t2) is: \n" <<
+                             currentState_.transpose() << std::endl;
+
+                std::cout << "\n The rossover observable is: " << currentObservation << std::endl;
+
+                std::cout << "\n The pos.norm is: " << rho << std::endl;
+
+                std::cout << "\n currentInertialPositionPartialWrtParameter: " << std::endl <<
+                             currentInertialPositionPartialWrtParameter << std::endl;
+
+                std::cout << "\n secondArcPartialWrtCurrentPosition: " << std::endl <<
+                             secondArcPartialWrtCurrentPosition << std::endl;
+
+                std::cout << "\n observationPartialWrtCurrentState: " << std::endl <<
+                             observationPartialWrtCurrentState << std::endl << std::endl;
+            } // */
         }
     }
     return returnPartial;
