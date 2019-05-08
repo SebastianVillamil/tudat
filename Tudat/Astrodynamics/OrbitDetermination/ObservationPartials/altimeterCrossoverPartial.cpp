@@ -55,8 +55,21 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
 {
     AltimeterCrossoverPartialReturnType returnPartial;
 
-    Eigen::Matrix< double, 3, 1 > firstArcPartialWrtCurrentPosition;
-    Eigen::Matrix< double, 3, 1 > secondArcPartialWrtCurrentPosition;
+    Eigen::Matrix< double, 1, 3 > firstArcPartialWrtCurrentPosition;  // 1, 3 as dh/dr1
+    Eigen::Matrix< double, 1, 3 > secondArcPartialWrtCurrentPosition;  // 1, 3 as dh/dr2
+
+    double dR2dt2;
+    Eigen::Matrix< double, 1, 3 > dt2dr1;  // 1, 3 due to d/dr1
+    Eigen::Matrix< double, 1, 3 > dR1dr1;  // 1, 3 due to .transpose( )
+    double dR1dt1;
+    Eigen::Matrix< double, 1, 3 > dt1dr1;  // 1, 3 due to d/dr1
+
+    Eigen::Matrix< double, 1, 3 > dR2dr2;  // 1, 3 due to .transpose( )
+//    Eigen::Matrix< double, 3, 1 > dR2dt2;
+    Eigen::Matrix< double, 1, 3 > dt2dr2;  // 1, 3 due to d/dr2
+//    Eigen::Matrix< double, 3, 1 > dR1dt1;
+    Eigen::Matrix< double, 1, 3 > dt1dr2;  // 1, 3 due to d/dr2
+
     Eigen::MatrixXd observationPartialWrtCurrentState = Eigen::MatrixXd::Zero( 1, 6 );
 
     // Iterate over all link ends
@@ -71,13 +84,46 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             Eigen::Matrix< double, 3, Eigen::Dynamic > currentInertialPositionPartialWrtParameter =
                     positionPartialIterator_->second->calculatePartialOfPosition(
                                           currentState_ , currentTime_ );
-            double rho = currentState_.segment( 0, 3 ).norm( );
+
+            // def of dR2dt2
+            Eigen::Vector3d r2UnitVector = states[ 1 ].segment( 0, 3 ) / states[ 1 ].segment( 0, 3 ).norm();
+            dR2dt2 = states[ 1 ].segment( 0, 3 ).dot( r2UnitVector );
+
+            // def of dt2dr1
+            Eigen::Vector3d r1UnitVector = states[ 0 ].segment( 0, 3 ) / states[ 0 ].segment( 0, 3 ).norm();
+            Eigen::Vector3d v1UnitVector = states[ 0 ].segment( 3, 3 ) / states[ 0 ].segment( 3, 3 ).norm();
+            Eigen::Vector3d v2UnitVector = states[ 1 ].segment( 3, 3 ) / states[ 1 ].segment( 3, 3 ).norm();
+            Eigen::Matrix3d A_dt2dr1;
+            A_dt2dr1 << r1UnitVector.transpose(), v1UnitVector.transpose(), v2UnitVector.transpose();
+            Eigen::Vector3d v2InPlane = states[ 1 ].segment( 3, 3 ) -
+                    states[ 1 ].segment( 3, 3 ).cwiseProduct(r2UnitVector);
+            Eigen::Vector3d b_dt2dr1( 0, 0, ( 1 / v2InPlane.norm( ) ) );
+            dt2dr1 << ( A_dt2dr1.inverse( ) * b_dt2dr1 );
+
+            // def of dR1dr1
+            double r1_norm = states[ 0 ].segment( 0, 3 ).norm( );
+            dR1dr1 << ( (1/r1_norm)*states[ 0 ].segment( 0, 3 ) ).transpose();
+
+            // def of dR1dt1
+            dR1dt1 = states[ 0 ].segment( 0, 3 ).dot( r1UnitVector );
+
+            // def of dt1dr1
+            Eigen::Matrix3d A_dt1dr1;
+            A_dt1dr1 << r1UnitVector.transpose(), v2UnitVector.transpose(), v1UnitVector.transpose();
+            Eigen::Vector3d v1InPlane = states[ 0 ].segment( 3, 3 ) -
+                    states[ 0 ].segment( 3, 3 ).cwiseProduct( r1UnitVector );
+            Eigen::Vector3d b_dt1dr1( 0, 0, - ( 1 / v1InPlane.norm( ) ) );
+            dt1dr1 << ( A_dt1dr1.inverse( ) * b_dt1dr1 );
+
+            firstArcPartialWrtCurrentPosition << ( dR2dt2*dt2dr1 - dR1dr1 - dR1dt1*dt1dr1 );
+//            firstArcPartialWrtCurrentPosition << ( - dR1dr1 );
+            observationPartialWrtCurrentState.block( 0, 0, 1, 3 ) = firstArcPartialWrtCurrentPosition;
 
             // Beware the MINUS, since xoverObs = |pos(t2)|-|pos(t1)|
-            firstArcPartialWrtCurrentPosition << - ( (1/rho)*currentState_.segment( 0, 3 ) );
+//            firstArcPartialWrtCurrentPosition << - ( (1/rho)*currentState_.segment( 0, 3 ) );
 
-            observationPartialWrtCurrentState.block( 0, 0, 1, 3 ) =
-                    firstArcPartialWrtCurrentPosition.transpose() * 1.0; //  * -1.0 as ad-hoc fix
+//            observationPartialWrtCurrentState.block( 0, 0, 1, 3 ) =
+//                    firstArcPartialWrtCurrentPosition.transpose() * 1.0; //  * -1.0 as ad-hoc fix
 
             returnPartial.push_back(
                         std::make_pair( observationPartialWrtCurrentState, currentTime_ ) );
@@ -112,11 +158,45 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             Eigen::Matrix< double, 3, Eigen::Dynamic > currentInertialPositionPartialWrtParameter =
                     positionPartialIterator_->second->calculatePartialOfPosition(
                                           currentState_ , currentTime_ );
-            double rho = currentState_.segment( 0, 3 ).norm( );
-            secondArcPartialWrtCurrentPosition << ( (1/rho)*currentState_.segment( 0, 3 ) );
 
-            observationPartialWrtCurrentState.block( 0, 0, 1, 3 ) =
-                    secondArcPartialWrtCurrentPosition.transpose() * 1.0; //  * -1.0 as ad-hoc fix
+            // def of dR2dr2
+            double r2_norm = states[ 1 ].segment( 0, 3 ).norm( );
+            dR2dr2 << ( (1/r2_norm)*states[ 1 ].segment( 0, 3 ) ).transpose();
+
+            // def of dR2dt2
+            Eigen::Vector3d r2UnitVector = states[ 1 ].segment( 0, 3 ) / states[ 1 ].segment( 0, 3 ).norm();
+            dR2dt2 = states[ 1 ].segment( 0, 3 ).dot( r2UnitVector );
+
+            // def of dt2dr2
+            Eigen::Vector3d v1UnitVector = states[ 0 ].segment( 3, 3 ) / states[ 0 ].segment( 3, 3 ).norm();
+            Eigen::Vector3d v2UnitVector = states[ 1 ].segment( 3, 3 ) / states[ 1 ].segment( 3, 3 ).norm();
+            Eigen::Matrix3d A_dt2dr2;
+            A_dt2dr2 << r2UnitVector.transpose(), v1UnitVector.transpose(), v2UnitVector.transpose();
+            Eigen::Vector3d v2InPlane = states[ 1 ].segment( 3, 3 ) -
+                    states[ 1 ].segment( 3, 3 ).cwiseProduct( r2UnitVector );
+            Eigen::Vector3d b_dt2dr2( 0, 0, - ( 1 / v2InPlane.norm( ) ) );
+            dt2dr2 << ( A_dt2dr2.inverse( ) * b_dt2dr2 );
+
+            // def of dR1dt1
+            Eigen::Vector3d r1UnitVector = states[ 1 ].segment( 0, 3 ) / states[ 1 ].segment( 0, 3 ).norm();
+            dR1dt1 = states[ 0 ].segment( 0, 3 ).dot( r1UnitVector );
+
+            // def of dt1dr2
+            Eigen::Matrix3d A_dt1dr2;
+            A_dt1dr2 << r1UnitVector.transpose(), v2UnitVector.transpose(), v1UnitVector.transpose();
+            Eigen::Vector3d v1InPlane = states[ 0 ].segment( 3, 3 ) -
+                    states[ 0 ].segment( 3, 3 ).cwiseProduct( r1UnitVector );
+            Eigen::Vector3d b_dt1dr2( 0, 0, ( 1 / v1InPlane.norm( ) ) );
+            dt1dr2 << ( A_dt1dr2.inverse( ) * b_dt1dr2 );
+
+            secondArcPartialWrtCurrentPosition << ( dR2dr2 + dR2dt2*dt2dr2 + dR1dt1*dt1dr2 );
+//            secondArcPartialWrtCurrentPosition << ( dR1dt1*dt1dr2 );
+            observationPartialWrtCurrentState.block( 0, 0, 1, 3 ) = secondArcPartialWrtCurrentPosition;
+
+//            secondArcPartialWrtCurrentPosition << ( (1/rho)*currentState_.segment( 0, 3 ) );
+
+//            observationPartialWrtCurrentState.block( 0, 0, 1, 3 ) =
+//                    secondArcPartialWrtCurrentPosition.transpose() * 1.0; //  * -1.0 as ad-hoc fix
 
             returnPartial.push_back(
                         std::make_pair( observationPartialWrtCurrentState, currentTime_ ) );
