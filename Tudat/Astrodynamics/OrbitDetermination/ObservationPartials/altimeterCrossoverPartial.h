@@ -55,8 +55,8 @@ public:
     AltimeterCrossoverPartial(
             const std::shared_ptr< AltimeterCrossoverScaling > altimeterCrossoverScaler,
             const std::map< observation_models::LinkEndType, std::shared_ptr< CartesianStatePartial > >& positionPartialList,
-            const std::shared_ptr< ephemerides::RotationalEphemeris > centralBodyRotationModel,
             const estimatable_parameters::EstimatebleParameterIdentifier parameterIdentifier,
+            const std::shared_ptr< ephemerides::RotationalEphemeris > centralBodyRotationModel,
             const std::vector< std::shared_ptr< observation_partials::LightTimeCorrectionPartial > >&
             lighTimeCorrectionPartials =
             std::vector< std::shared_ptr< observation_partials::LightTimeCorrectionPartial > >( ) ):
