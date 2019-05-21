@@ -129,10 +129,10 @@ PerLinkEndPerLightTimeSolutionCorrections getLightTimeCorrectionsList(
                         ( observationModelIterator->second );
                 currentLightTimeCorrections.push_back(
                             oneWayDifferencedRangeObservationModel->getArcStartLightTimeCalculator( )->
-                                                       getLightTimeCorrection( ) );
+                            getLightTimeCorrection( ) );
                 currentLightTimeCorrections.push_back(
                             oneWayDifferencedRangeObservationModel->getArcEndLightTimeCalculator( )->
-                                                       getLightTimeCorrection( ) );
+                            getLightTimeCorrection( ) );
 
                 break;
             }
@@ -142,7 +142,7 @@ PerLinkEndPerLightTimeSolutionCorrections getLightTimeCorrectionsList(
                         std::dynamic_pointer_cast< observation_models::NWayRangeObservationModel< ObservationScalarType, TimeType > >
                         ( observationModelIterator->second );
                 std::vector< std::shared_ptr< observation_models::LightTimeCalculator< ObservationScalarType, TimeType > > > lightTimeCalculatorList =
-                         nWayRangeObservationModel->getLightTimeCalculators( );
+                        nWayRangeObservationModel->getLightTimeCalculators( );
                 for( unsigned int i = 0; i < lightTimeCalculatorList.size( ); i++ )
                 {
                     currentLightTimeCorrections.push_back( lightTimeCalculatorList.at( i )->getLightTimeCorrection( ) );
@@ -166,6 +166,10 @@ PerLinkEndPerLightTimeSolutionCorrections getLightTimeCorrectionsList(
 //                        ( observationModelIterator->second );
 //                singleObservableCorrectionList = (
 //                            altimetryCrossoverModel->getLightTimeCalculator( )->getLightTimeCorrection( ) );
+                break;
+            }
+            case observation_models::velocity_observable:
+            {
                 break;
             }
             default:
@@ -433,6 +437,11 @@ public:
             break;
         case observation_models::euler_angle_313_observable:
             observationPartialList = createEulerAngleObservablePartials< ObservationScalarType >(
+                        utilities::createVectorFromMapKeys( observationModelList ), bodyMap, parametersToEstimate );
+            break;
+
+        case observation_models::velocity_observable:
+            observationPartialList = createVelocityObservablePartials< ObservationScalarType >(
                         utilities::createVectorFromMapKeys( observationModelList ), bodyMap, parametersToEstimate );
             break;
         default:

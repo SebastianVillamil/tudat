@@ -52,30 +52,20 @@ public:
     typedef std::vector< std::pair< Eigen::Matrix< double, 1, Eigen::Dynamic >, double > > AltimeterCrossoverPartialReturnType;
     typedef std::pair< Eigen::Matrix< double, 1, Eigen::Dynamic >, double > SingleAltimeterCrossoverPartialReturnType;
 
-    AltimeterCrossoverPartial(  // this is the constructor
+    AltimeterCrossoverPartial(
             const std::shared_ptr< AltimeterCrossoverScaling > altimeterCrossoverScaler,
             const std::map< observation_models::LinkEndType, std::shared_ptr< CartesianStatePartial > >& positionPartialList,
+            const std::shared_ptr< ephemerides::RotationalEphemeris > centralBodyRotationModel,
             const estimatable_parameters::EstimatebleParameterIdentifier parameterIdentifier,
             const std::vector< std::shared_ptr< observation_partials::LightTimeCorrectionPartial > >&
             lighTimeCorrectionPartials =
             std::vector< std::shared_ptr< observation_partials::LightTimeCorrectionPartial > >( ) ):
         ObservationPartial< 1 >( parameterIdentifier ), altimeterCrossoverScaler_( altimeterCrossoverScaler ),
-        positionPartialList_( positionPartialList )
+        positionPartialList_( positionPartialList ), centralBodyRotationModel_( centralBodyRotationModel )
     {
         std::pair< std::function< SingleAltimeterCrossoverPartialReturnType(
                     const std::vector< Eigen::Vector6d >&, const std::vector< double >& ) >,
                 bool > lightTimeCorrectionPartial;
-
-//        // Create light time correction partial functions
-//        for( unsigned int i = 0; i < lighTimeCorrectionPartials.size( ); i++ )
-//        {
-//            lightTimeCorrectionPartial = getLightTimeParameterPartialFunction(
-//                        parameterIdentifier, lighTimeCorrectionPartials.at( i ) );
-//            if( lightTimeCorrectionPartial.second != 0 )
-//            {
-//                lighTimeCorrectionPartialsFunctions_.push_back( lightTimeCorrectionPartial.first );
-//            }
-//        }
     }
 
     //! Destructor.
@@ -98,26 +88,6 @@ public:
             const observation_models::LinkEndType linkEndOfFixedTime,
             const Eigen::Vector1d& currentObservation = Eigen::Vector1d::Constant( TUDAT_NAN ) );
 
-//    //! Function to get scaling object used for mapping partials of positions to partials of observable
-//    /*!
-//     * Function to get scaling object used for mapping partials of positions to partials of observable
-//     * \return
-//     */
-//    std::shared_ptr< AltimeterCrossoverScaling > getaltimeterCrossoverScaler( )
-//    {
-//        return altimeterCrossoverScaler_;
-//    }
-
-//    //! Function to get the number of light-time correction partial functions.
-//    /*!
-//     * Number of light-time correction partial functions.
-//     * \return Number of light-time correction partial functions.
-//     */
-//    int getNumberOfLighTimeCorrectionPartialsFunctions( )
-//    {
-//        return lighTimeCorrectionPartialsFunctions_.size( );
-//    }
-
 protected:
 
     //! Scaling object used for mapping partials of positions to partials of observable
@@ -129,19 +99,15 @@ protected:
     //! Iterator over list of position partials per link end.
     std::map< observation_models::LinkEndType, std::shared_ptr< CartesianStatePartial > >::iterator positionPartialIterator_;
 
-//    //! List of light-time correction partial functions.
-//    std::vector< std::function< SingleAltimeterCrossoverPartialReturnType(
-//            const std::vector< Eigen::Vector6d >&, const std::vector< double >& ) > >
-//    lighTimeCorrectionPartialsFunctions_;
+    //! Pre-declared state variables to be used in calculatePartial function.
+    Eigen::Vector6d currentStateArc1_;
+    Eigen::Vector6d currentStateArc2_;
 
-//    //! List of light-time correction partial objects.
-//    std::vector< std::shared_ptr< observation_partials::LightTimeCorrectionPartial > > lighTimeCorrectionPartials_;
+    //! Pre-declared time variables to be used in calculatePartial function.
+    double currentTimeArc1_;
+    double currentTimeArc2_;
 
-    //! Pre-declared state variable to be used in calculatePartial function.
-    Eigen::Vector6d currentState_;
-
-    //! Pre-declared time variable to be used in calculatePartial function.
-    double currentTime_;
+    std::shared_ptr< ephemerides::RotationalEphemeris > centralBodyRotationModel_;
 
 };
 

@@ -41,7 +41,7 @@ namespace numerical_integrators
  * \tparam IndependentVariableType The type of the independent variable.
  */
 template< typename IndependentVariableType = double, typename StateType = Eigen::VectorXd,
-           typename StateDerivativeType = StateType, typename TimeStepType = IndependentVariableType >
+          typename StateDerivativeType = StateType, typename TimeStepType = IndependentVariableType >
 class NumericalIntegrator
 {
 public:
@@ -211,8 +211,9 @@ public:
     {
         TUDAT_UNUSED_PARAMETER( newState );
         TUDAT_UNUSED_PARAMETER( allowRollback );
-        throw std::runtime_error( "Error in numerical integrator. The function to modify the current state has not been implemented "
-                                  "in this integrator." );
+
+        throw std::runtime_error(
+                    "Error in numerical integrator. The function to modify the current state has not been implemented" );
     }
 
     //! Modify the state and time for the current step.
@@ -256,7 +257,6 @@ protected:
      *  checked during the integration subteps.
      */
     std::function< bool( const double, const double ) > propagationTerminationFunction_;
-
 };
 
 
@@ -320,8 +320,8 @@ StateType NumericalIntegrator< IndependentVariableType, StateType, StateDerivati
                 else
                 {
                     std::cerr << "Warning, integrateTo function has failed to converge to final time to within tolerances, difference between true and requested final time is " <<
-                        intervalEnd - getCurrentIndependentVariable( ) << ", final time is: " <<
-                               getCurrentIndependentVariable( ) << std::endl;
+                                 intervalEnd - getCurrentIndependentVariable( ) << ", final time is: " <<
+                                 getCurrentIndependentVariable( ) << std::endl;
                 }
             }
         }

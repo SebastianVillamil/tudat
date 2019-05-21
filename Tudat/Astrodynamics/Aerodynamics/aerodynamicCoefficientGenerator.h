@@ -103,7 +103,7 @@ public:
         for( unsigned int i = 0; i < NumberOfIndependentVariables; i++ )
         {
             numberOfPointsPerIndependentVariables[ i ] = dataPointsOfIndependentVariables_[ i ].
-                                                         size( );
+                    size( );
         }
 
         aerodynamicCoefficients_.resize( numberOfPointsPerIndependentVariables );
@@ -226,8 +226,10 @@ public:
      *  numberOfIndependentVariables_
      *  \param independentVariables Independent variables of force and moment coefficient
      *  determination implemented by derived class
+     *  \param currentTime Time to which coefficients are to be updated (not used in this derived class).
      */
-    virtual void updateCurrentCoefficients( const std::vector< double >& independentVariables )
+    virtual void updateCurrentCoefficients( const std::vector< double >& independentVariables,
+                                            const double currentTime = TUDAT_NAN )
     {
         // Check if the correct number of aerodynamic coefficients is provided.
         if( independentVariables.size( ) != numberOfIndependentVariables_ )
@@ -242,8 +244,11 @@ public:
         // Update current coefficients.
         Eigen::Vector6d currentCoefficients = coefficientInterpolator_->interpolate(
                     independentVariables );
+
+
         currentForceCoefficients_ = currentCoefficients.segment( 0, 3 );
         currentMomentCoefficients_ = currentCoefficients.segment( 3, 3 );
+
     }
 
 protected:
@@ -288,7 +293,7 @@ protected:
     //! Interpolator producing continuous aerodynamic coefficients from the discrete calculations
     //! contained in aerodynamicCoefficients_.
     std::shared_ptr< interpolators::Interpolator< double, Eigen::Vector6d > >
-            coefficientInterpolator_;
+    coefficientInterpolator_;
 };
 
 } // namespace aerodynamics
