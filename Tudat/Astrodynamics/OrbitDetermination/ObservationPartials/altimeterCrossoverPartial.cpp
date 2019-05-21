@@ -140,8 +140,8 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             std::cout << "\n dt1dr1: \n" << dt1dr1 << std::endl;
 
 
-//            firstArcPartialWrtCurrentPosition << ( dR2dt2*dt2dr1 - dR1dr1 - dR1dt1*dt1dr1 );
-            firstArcPartialWrtCurrentPosition << ( - dR1dr1 );
+            firstArcPartialWrtCurrentPosition << ( dR2dt2*dt2dr1 - dR1dr1 - dR1dt1*dt1dr1 );
+//            firstArcPartialWrtCurrentPosition << ( - dR1dr1 );
             observationPartialWrtCurrentState.block( 0, 0, 1, 3 ) = firstArcPartialWrtCurrentPosition;
 
             returnPartial.push_back(
@@ -209,8 +209,8 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
                           bf_dt1dr2, currentTimeArc2_, centralBodyRotationModel_ ).segment( 0, 3 ).transpose();
 //            std::cout << "\n dt1dr2: \n" << dt1dr2 << std::endl;
 
-//            secondArcPartialWrtCurrentPosition << ( dR2dr2 + dR2dt2*dt2dr2 - dR1dt1*dt1dr2 );
-            secondArcPartialWrtCurrentPosition << ( dR2dr2 );
+            secondArcPartialWrtCurrentPosition << ( dR2dr2 + dR2dt2*dt2dr2 - dR1dt1*dt1dr2 );
+//            secondArcPartialWrtCurrentPosition << ( dR2dr2 );
             observationPartialWrtCurrentState.block( 0, 0, 1, 3 ) = secondArcPartialWrtCurrentPosition;
 
             returnPartial.push_back(
