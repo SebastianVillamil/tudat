@@ -42,9 +42,9 @@ std::shared_ptr< AltimeterCrossoverPartial > createAltimeterCrossoverPartialWrtB
     {
         altimeterCrossoverPartial = std::make_shared< AltimeterCrossoverPartial >(
                     altimeterCrossoverScaler, positionPartials,
+                    bodyMap.at( "Ganymede" )->getRotationalEphemeris( ),
                     std::make_pair(
                         estimatable_parameters::initial_body_state, std::make_pair( bodyToEstimate, "" ) ),
-                    bodyMap.at( "Ganymede" )->getRotationalEphemeris( ),
                     lightTimeCorrectionPartialObjects );
     }
 
