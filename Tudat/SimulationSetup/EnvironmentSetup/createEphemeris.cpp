@@ -99,7 +99,6 @@ std::shared_ptr< ephemerides::Ephemeris > createBodyEphemeris(
                 inputName = bodyName;
                 if( bodyName == "Mars" ||
                         bodyName == "Jupiter"  || bodyName == "Saturn" ||
-//                        bodyName == "Saturn" ||
                         bodyName == "Uranus" || bodyName == "Neptune" )
                 {
                     inputName += " Barycenter";

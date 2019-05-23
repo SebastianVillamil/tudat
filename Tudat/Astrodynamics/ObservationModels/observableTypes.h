@@ -35,7 +35,8 @@ enum ObservableType
     n_way_range = 5,
     two_way_doppler = 6,
     euler_angle_313_observable = 7,
-    altimetry_crossover = 8
+    velocity_observable = 8,
+    altimetry_crossover = 9
 };
 
 //! Function to get the name (string) associated with a given observable type.

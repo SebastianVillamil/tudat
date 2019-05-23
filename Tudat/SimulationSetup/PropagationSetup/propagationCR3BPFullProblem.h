@@ -55,8 +55,7 @@ simulation_setup::NamedBodyMap setupBodyMapCR3BP(
  * \param namePrimaryBody Name of the primary body.
  * \param nameSecondaryBody Name of the secondary body.
  * \param nameBodyToPropagate Name of the third, smaller body to be propagated.
- * \param bodiesToPropagate Bodies to be propagated.
- * \param centralBodies Central bodies for the propagation.
+ * \param centralBody Central bodys for the propagation.
  * \param bodyMap CR3BP body map.
  * \return Acceleration map for the CR3BP.
  */
@@ -89,6 +88,16 @@ void propagateCR3BPFromEnvironment(
         const std::vector < std::string >& bodiesCR3BP,
         std::map< double, Eigen::Vector6d >& stateHistory,
         const bool outputInNormalizedCoordinates = false );
+
+void propagateCR3BPAndFullDynamicsProblem(
+        const double initialTime,
+        const std::shared_ptr< numerical_integrators::IntegratorSettings< double > > integratorSettings,
+        const std::shared_ptr< propagators::TranslationalStatePropagatorSettings< double > > propagatorSettings,
+        const simulation_setup::NamedBodyMap& bodyMap,
+        const std::vector < std::string >& bodiesCR3BP,
+        std::map< double, Eigen::Vector6d >& directPropagationResult,
+        std::map< double, Eigen::Vector6d >& cr3bpPropagationResult,
+        std::map< double, Eigen::VectorXd >& dependentVariableValues );
 
 //! Propagate the CR3BP and the full dynamics problem
 /*!

@@ -42,6 +42,9 @@ std::string getParameterTypeString( const EstimatebleParametersEnum parameterTyp
     case arc_wise_radiation_pressure_coefficient:
         parameterDescription = "arc-wise radiation pressure coefficient ";
         break;
+    case arc_wise_constant_drag_coefficient:
+        parameterDescription = "arc-wise drag coefficient ";
+        break;
     case spherical_harmonics_cosine_coefficient_block:
         parameterDescription = "cosine spherical harmonic coefficient block ";
         break;
@@ -96,6 +99,9 @@ std::string getParameterTypeString( const EstimatebleParametersEnum parameterTyp
     case mean_moment_of_inertia:
         parameterDescription = " mean moment of inertia ";
         break;
+    case desaturation_delta_v_values:
+        parameterDescription = " momentum wheel desaturation Delta V ";
+        break;
     default:
         std::string errorMessage = "Error when getting parameter string, did not recognize parameter " +
                 std::to_string( parameterType );
@@ -142,6 +148,9 @@ bool isDoubleParameter( const EstimatebleParametersEnum parameterType )
         isDoubleParameter = true;
         break;
     case arc_wise_radiation_pressure_coefficient:
+        isDoubleParameter = false;
+        break;
+    case arc_wise_constant_drag_coefficient:
         isDoubleParameter = false;
         break;
     case spherical_harmonics_cosine_coefficient_block:
@@ -198,6 +207,9 @@ bool isDoubleParameter( const EstimatebleParametersEnum parameterType )
     case mean_moment_of_inertia:
          isDoubleParameter = true;
         break;
+    case desaturation_delta_v_values:
+        isDoubleParameter = false;
+       break;
     default:
         throw std::runtime_error( "Error, parameter type " + std::to_string( parameterType ) +
                                   " not found when getting parameter type" );

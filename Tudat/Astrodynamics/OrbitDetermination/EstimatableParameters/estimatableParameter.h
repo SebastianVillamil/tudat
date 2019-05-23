@@ -57,7 +57,9 @@ enum EstimatebleParametersEnum
     full_degree_tidal_love_number,
     single_degree_variable_tidal_love_number,
     direct_dissipation_tidal_time_lag,
-    mean_moment_of_inertia
+    mean_moment_of_inertia,
+    arc_wise_constant_drag_coefficient,
+    desaturation_delta_v_values
 };
 
 std::string getParameterTypeString( const EstimatebleParametersEnum parameterType );

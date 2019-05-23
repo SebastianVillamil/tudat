@@ -463,6 +463,8 @@ createTranslationalEquationsOfMotionEnvironmentUpdaterSettings(
                     break;
                 case empirical_acceleration:
                     break;
+                case momentum_wheel_desaturation_acceleration:
+                    break;
                 default:
                     throw std::runtime_error( std::string( "Error when setting acceleration model update needs, model type not recognized: " ) +
                                               std::to_string( currentAccelerationModelType ) );
@@ -774,6 +776,12 @@ std::vector< std::string > > createEnvironmentUpdaterSettingsForDependentVariabl
     case single_gravity_field_variation_acceleration_terms:
         break;
     case acceleration_partial_wrt_body_translational_state:
+        break;
+    case current_body_mass_dependent_variable:
+        variablesToUpdate[ body_mass_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
+        break;
+    case radiation_pressure_coefficient_dependent_variable:
+        variablesToUpdate[ radiation_pressure_interface_update ].push_back( dependentVariableSaveSettings->associatedBody_ );
         break;
     default:
         throw std::runtime_error( "Error when getting environment updates for dependent variables, parameter " +

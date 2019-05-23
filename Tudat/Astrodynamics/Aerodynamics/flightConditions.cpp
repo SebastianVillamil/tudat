@@ -142,7 +142,8 @@ void AtmosphericFlightConditions::updateConditions( const double currentTime )
 
         // Update aerodynamic coefficients.
         aerodynamicCoefficientInterface_->updateFullCurrentCoefficients(
-                    aerodynamicCoefficientIndependentVariables_, controlSurfaceAerodynamicCoefficientIndependentVariables_ );
+                    aerodynamicCoefficientIndependentVariables_, controlSurfaceAerodynamicCoefficientIndependentVariables_,
+                    currentTime_ );
     }
 }
 
@@ -177,10 +178,6 @@ double AtmosphericFlightConditions::getAerodynamicCoefficientIndependentVariable
                     reference_frames::angle_of_sideslip );
         break;
     case altitude_dependent:
-        if( aerodynamicAngleCalculator_== nullptr )
-        {
-            throw std::runtime_error( "Error, aerodynamic angle calculator is nullptr, but require angle of sideslip" );
-        }
         currentIndependentVariable = getCurrentAltitude( );
         break;
     case control_surface_deflection_dependent:
