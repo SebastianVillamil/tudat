@@ -126,22 +126,12 @@ public:
         return ( Eigen::Matrix< ObservationScalarType, 1, 1 >( ) << crossoverAltimetryObservation ).finished( );
     }
 
-    //! Function to compute one-way range observable without any corrections.
+    //! Function to do numerical tests.
     /*!
-     *  Function to compute one-way range  observable without any corrections, i.e. the true physical range as computed
-     *  from the defined link ends. Note that this observable does include light-time
-     *  corrections, which represent physically true corrections. It does not include e.g. system-dependent measurement
-     *  errors, such as biases or clock errors.
-     *  The times and states of the link ends are also returned in full precision (determined by class template
-     *  arguments). These states and times are returned by reference.
-     *  \param time Time at which observable is to be evaluated.
-     *  \param linkEndAssociatedWithTime Link end at which given time is valid, i.e. link end for which associated time
-     *  is kept constant (to input value)
-     *  \param linkEndTimes List of times at each link end during observation.
-     *  \param linkEndStates List of states at each link end during observation.
-     *  \return Ideal one-way range observable.
+     *  Function to do numerical tests.
+     *  \param time of crossover in arc 1
+     *  \return Vector with varios information at the crossover.
      */
-//    std::vector< double > computeCrossoverData( const TimeType time )
     Eigen::VectorXd computeCrossoverData( const TimeType time )
     {
         TimeType firstArcTime = time, secondArcTime = crossoverTimes_[ time ];
@@ -168,51 +158,9 @@ public:
         XoverDataVector[ 6 ] = ( firstArcState.segment( 3, 3 ).norm( ) );
         XoverDataVector[ 7 ] = ( secondArcState.segment( 3, 3 ).norm( ) );
 
-/*        if( time == 1045408937.2387744 || time == 1045406388.7029006 )
-        {
-            std::cout << std::endl << "-- PARTIAL DERIVATIVE TEST (from altimeterCrossoverPartial.cpp) --"
-                      << std::endl;
-            std::cout << std::setprecision(17) << "s(t1): \n" << firstArcState << std::endl;
-            std::cout << "firstArcState.segment( 3, 3 ).norm(): \n" <<
-                         firstArcState.segment( 3, 3 ).norm( ) << std::endl;
-        } // */
         return ( XoverDataVector );
     }
 
-    Eigen::Vector3d computeDt2Dr2( const TimeType time )
-        {
-            TimeType firstArcTime = time, secondArcTime = crossoverTimes_[ time ];
-            StateType firstArcState = firstArcBodyStateFunction_( firstArcTime );
-            StateType secondArcState = secondArcBodyStateFunction_( secondArcTime );
-
-            Eigen::Vector3d XoverPartialsVector;
-
-            Eigen::Vector3d r2UnitVector = secondArcState.segment( 0, 3 )/secondArcState.segment( 0, 3 ).norm();
-            Eigen::Vector3d v1UnitVector = firstArcState.segment( 3, 3 )/firstArcState.segment( 3, 3 ).norm();
-            Eigen::Vector3d v2UnitVector = secondArcState.segment( 3, 3 )/secondArcState.segment( 3, 3 ).norm();
-            Eigen::Matrix3d A;
-            A << r2UnitVector.transpose(), v1UnitVector.transpose(), v2UnitVector.transpose();
-    //        std::cout << std::setprecision(17) << "r2Vector: \n" << secondArcState.segment( 0, 3 ) << std::endl;
-    //        std::cout << "r2UnitVector: \n" << r2UnitVector << std::endl;
-    //        std::cout << "v1UnitVector: \n" << v1UnitVector << std::endl;
-    //        std::cout << "v2UnitVector: \n" << v2UnitVector << std::endl;
-    //        std::cout << "A: \n" << A << std::endl;
-
-    //        double r2_norm = secondArcState.segment( 0, 3 ).norm( );
-    //        Eigen::Matrix< double, 1, 3 > dR2dr2;
-    //        dR2dr2 << ( (1/r2_norm) * secondArcState.segment( 0, 3 ) ).transpose();
-    //        std::cout << "dR2dr2: \n" << dR2dr2 << std::endl;
-
-            Eigen::Vector3d v2UnitVectorHor = secondArcState.segment( 3, 3 ) -
-                    secondArcState.segment( 3, 3 ).cwiseProduct(r2UnitVector);
-            Eigen::Vector3d b( 0, 0, -( 1 / v2UnitVectorHor.norm( )) );
-    //        std::cout << std::setprecision(17) << "A: \n" << A << std::endl;
-    //        std::cout << "A determinant: \n" << A.determinant() << std::endl;
-    //        std::cout << "A inverse: \n" << A.inverse() << std::endl;
-    //        std::cout << "A inverse times b \n" << A.inverse()*b << std::endl;
-
-            return ( XoverPartialsVector );
-    }
 
 private:
 
