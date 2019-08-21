@@ -101,13 +101,13 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             dR2dt2 = currentStateArc2_.segment( 3, 3 ).dot( r2UnitVector );
 
             // Definition of dt2dr1
-            Eigen::Vector3d bf_r2UniVector = bf_StateArc2.segment( 0, 3 ) / bf_StateArc2.segment( 0, 3 ).norm();
+            Eigen::Vector3d bf_r2UnitVector = bf_StateArc2.segment( 0, 3 ) / bf_StateArc2.segment( 0, 3 ).norm();
             Eigen::Vector3d bf_v1UnitVector = bf_StateArc1.segment( 3, 3 ) / bf_StateArc1.segment( 3, 3 ).norm();
             Eigen::Vector3d bf_v2UnitVector = bf_StateArc2.segment( 3, 3 ) / bf_StateArc2.segment( 3, 3 ).norm();
             Eigen::Matrix3d A_dt2dr1;
-            A_dt2dr1 << bf_r2UniVector.transpose(), bf_v1UnitVector.transpose(), bf_v2UnitVector.transpose();
-            Eigen::Vector3d v2InPlane = bf_StateArc2.segment( 3, 3 ) -
-                    bf_StateArc2.segment( 3, 3 ).cwiseProduct( bf_r2UniVector );
+            A_dt2dr1 << bf_r2UnitVector.transpose(), bf_v1UnitVector.transpose(), bf_v2UnitVector.transpose();
+            Eigen::Vector3d v2Vertical = (bf_StateArc2.segment( 3, 3 ).dot(bf_r2UnitVector))*bf_r2UnitVector;
+            Eigen::Vector3d v2InPlane = bf_StateArc2.segment( 3, 3 ) - v2Vertical;
             Eigen::Vector3d b_dt2dr1( 0, 0, ( 1 / v2InPlane.norm( ) ) );
             Eigen::Vector6d bf_dt2dr1;
             bf_dt2dr1 << ( A_dt2dr1.inverse( ) * b_dt2dr1 ), 0, 0, 0;
@@ -126,8 +126,8 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             Eigen::Vector3d bf_r1UnitVector = bf_StateArc1.segment( 0, 3 ) / bf_StateArc1.segment( 0, 3 ).norm();
             Eigen::Matrix3d A_dt1dr1;
             A_dt1dr1 << bf_r1UnitVector.transpose(), bf_v2UnitVector.transpose(), bf_v1UnitVector.transpose();
-            Eigen::Vector3d v1InPlane = bf_StateArc1.segment( 3, 3 ) -
-                    bf_StateArc1.segment( 3, 3 ).cwiseProduct( bf_r1UnitVector );
+            Eigen::Vector3d v1Vertical = (bf_StateArc1.segment( 3, 3 ).dot(bf_r1UnitVector))*bf_r1UnitVector;
+            Eigen::Vector3d v1InPlane = bf_StateArc1.segment( 3, 3 ) - v1Vertical;
             Eigen::Vector3d b_dt1dr1( 0, 0, - ( 1 / v1InPlane.norm( ) ) );
             Eigen::Vector6d bf_dt1dr1;
             bf_dt1dr1 << ( A_dt1dr1.inverse( ) * b_dt1dr1 ), 0, 0, 0;
@@ -142,12 +142,18 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             returnPartial.push_back(
                         std::make_pair( observationPartialWrtCurrentState, currentTimeArc1_ ) );
 
-//            std::cout << "\n dR2dt2: \n" << dR2dt2 << std::endl;
-//            std::cout << "\n dt2dr1: \n" << dt2dr1 << std::endl;
+//            std::cout << "\n (dR2dt2): \n" << dR2dt2 << std::endl;
+//            std::cout << "\n (dt2dr1): \n" << dt2dr1 << std::endl;
+//            std::cout << "\n dR2dt2*dt2dr1: \n" << dR2dt2*dt2dr1 << std::endl;
+
 //            std::cout << "\n dR1dr1: \n" << dR1dr1 << std::endl;
-//            std::cout << "\n dR1dt1: \n" << dR1dt1 << std::endl;
-//            std::cout << "\n dt1dr1: \n" << dt1dr1 << std::endl;
+
+//            std::cout << "\n (dR1dt1): \n" << dR1dt1 << std::endl;
+//            std::cout << "\n (dt1dr1): \n" << dt1dr1 << std::endl;
+//            std::cout << "\n dR1dt1*dt1dr1: \n" << dR1dt1*dt1dr1 << std::endl;
+
 //            std::cout << "\n firstArcPartialWrtCurrentPosition: \n" << firstArcPartialWrtCurrentPosition << std::endl;
+//            std::cout << "\n observationPartialWrtCurrentState: \n" << observationPartialWrtCurrentState << std::endl;
         }
         // Compute dhdr2
         else if( positionPartialIterator_->first == observation_models::second_arc_body )
@@ -181,8 +187,8 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             Eigen::Vector3d bf_v2UnitVector = bf_StateArc2.segment( 3, 3 ) / bf_StateArc2.segment( 3, 3 ).norm();
             Eigen::Matrix3d A_dt2dr2;
             A_dt2dr2 << bf_r2UnitVector.transpose(), bf_v1UnitVector.transpose(), bf_v2UnitVector.transpose();
-            Eigen::Vector3d v2InPlane = bf_StateArc2.segment( 3, 3 ) -
-                    bf_StateArc2.segment( 3, 3 ).cwiseProduct( bf_r2UnitVector );
+            Eigen::Vector3d v2Vertical = (bf_StateArc2.segment( 3, 3 ).dot(bf_r2UnitVector))*bf_r2UnitVector;
+            Eigen::Vector3d v2InPlane = bf_StateArc2.segment( 3, 3 ) - v2Vertical;
             Eigen::Vector3d b_dt2dr2( 0, 0, - ( 1 / v2InPlane.norm( ) ) );
             Eigen::Vector6d bf_dt2dr2;
             bf_dt2dr2 << ( A_dt2dr2.inverse( ) * b_dt2dr2 ), 0, 0, 0;
@@ -197,8 +203,8 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
             Eigen::Vector3d bf_r1UnitVector = bf_StateArc1.segment( 0, 3 ) / bf_StateArc1.segment( 0, 3 ).norm();
             Eigen::Matrix3d A_dt1dr2;
             A_dt1dr2 << bf_r1UnitVector.transpose(), bf_v2UnitVector.transpose(), bf_v1UnitVector.transpose();
-            Eigen::Vector3d v1InPlane = bf_StateArc1.segment( 3, 3 ) -
-                    bf_StateArc1.segment( 3, 3 ).cwiseProduct( bf_r1UnitVector );
+            Eigen::Vector3d v1Vertical = (bf_StateArc1.segment( 3, 3 ).dot(bf_r1UnitVector))*bf_r1UnitVector;
+            Eigen::Vector3d v1InPlane = bf_StateArc1.segment( 3, 3 ) - v1Vertical;
             Eigen::Vector3d b_dt1dr2( 0, 0, ( 1 / v1InPlane.norm( ) ) );
             Eigen::Vector6d bf_dt1dr2;
             bf_dt1dr2 << ( A_dt1dr2.inverse( ) * b_dt1dr2 ), 0, 0, 0;
@@ -214,11 +220,17 @@ AltimeterCrossoverPartial::AltimeterCrossoverPartialReturnType AltimeterCrossove
                         std::make_pair( observationPartialWrtCurrentState, currentTimeArc2_ ) );
 
 //            std::cout << "\n dR2dr2: \n" << dR2dr2 << std::endl;
-//            std::cout << "\n dR2dt2: \n" << dR2dt2 << std::endl;
-//            std::cout << "\n dt2dr2: \n" << dt2dr2 << std::endl;
-//            std::cout << "\n dR1dt1: \n" << dR1dt1 << std::endl;
-//            std::cout << "\n dt1dr2: \n" << dt1dr2 << std::endl;
+
+//            std::cout << "\n (dR2dt2): \n" << dR2dt2 << std::endl;
+//            std::cout << "\n (dt2dr2): \n" << dt2dr2 << std::endl;
+//            std::cout << "\n dR2dt2*dt2dr2: \n" << dR2dt2*dt2dr2 << std::endl;
+
+//            std::cout << "\n (dR1dt1): \n" << dR1dt1 << std::endl;
+//            std::cout << "\n (dt1dr2): \n" << dt1dr2 << std::endl;
+//            std::cout << "\n dR1dt1*dt1dr2: \n" << dR1dt1*dt1dr2 << std::endl;
+
 //            std::cout << "\n secondArcPartialWrtCurrentPosition: \n" << secondArcPartialWrtCurrentPosition << std::endl;
+//            std::cout << "\n observationPartialWrtCurrentState: \n" << observationPartialWrtCurrentState << std::endl;
         }
     }
     return returnPartial;
